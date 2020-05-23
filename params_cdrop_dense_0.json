@@ -1,0 +1,36 @@
+{
+    "data":{
+        "table_train": "Calldrop_train",
+        "table_test": "Calldrop_test",
+        "nameFT" : "TOT_SCSCF_CALL_DROP",
+        "exp_folder": "/home/aritacco/LSTM/GS_results_AUTOREG/Dense_GS_result/",
+        "table_result": "Calldrop_results_onestep",
+        "info": " "
+    },
+    "model":{
+        "name":"dense",
+        "training":{
+            "n_epochs": 500,
+            "validation_perc" : 0.15,
+            "early_stop" : 1,
+            "patience" : 12,
+            "n_exp": 1
+        },
+        "params":{
+            "n_in": [168],
+            "n_out": [1],
+            "num_hidden": [35, 100, 400],
+            "num_layers": [1,2,3],
+            "dropout": [0],
+            "batch_size": [512, 128, 16],
+            "activation": ["relu"]
+        }
+    },
+    "connection":{
+        "database_username" : "voda",
+        "database_password" : "issue86",
+        "database_ip": "10.30.4.106",
+        "database_name": "vodafone"
+    }
+
+  }
