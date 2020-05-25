@@ -14,6 +14,8 @@ pip install gs_runner
 
 ## Usage
 
+### JSON config file
+
 Here an axample of a proper formatted .json file used
 to create a Keras LSTM model to perform training and forecasting
 over the 'cpu_usagemhz_average' metric in the 'issue86_interpolated_train' table.
@@ -58,6 +60,9 @@ The results (.h5 serialized model files and .csv test predictions) are stored in
     }
   }
 ```
+
+### create_model() override
+
 Since each model should have its own parameters it is important to specify all the parameters
 needed for the model creation under the ['model']['params'] key.
 You should use them for subclassing the created model(**params) function and use them
@@ -96,6 +101,9 @@ class gs_runner_LSTM(gs_runner):
         return model
 
 ```
+
+### create_train_data() override
+
 The train data creation should be done subclassing the create_train_data that
 should use the n_in and n_out param to crate a proper training set. The last
 n_in sample of the training set are returned as 'initial_seed' parameter
@@ -158,6 +166,9 @@ class gs_runner_LSTM(gs_runner):
 
 
 ```
+
+### train_model() override
+
 The function train_model takes in input the train_X and train_y from the *create_train_data*
 function as well as the batch_size and of course the model, and return the number of epochs (mandatory),
 the train and validation loss (not important at the moment, since the focus is on the test MAPE or MAE).
@@ -186,6 +197,8 @@ class gs_runner_LSTM(gs_runner):
 
 
 ```
+### forecast() override
+
 Since each model can make a number of prediction in one step, the forecast function takes in input the
 param 'n_steps' (test.shape / model.n_out) and the param 'n_remaining' (test.shape % model.n_out).
 In this case to fill the prediction array the model makes n_steps predictions using a sliding
