@@ -127,21 +127,20 @@ class gs_runner_LSTM(gs_runner):
         return train_X, train_y, initial_seed
 
 
-    def train_model(self, model,train_X : np.array, train_y : np.array,  batch_size: int, current_execution:str):
+    def train_model(self, model,train_X : np.array, train_y : np.array,  batch_size: int):
         earlyStop=EarlyStopping(monitor="val_loss",verbose=0,mode='min',patience=self.gs_data['model']['training']['patience'], restore_best_weights=True)
-        start = time.time()
+
         if self.gs_data['model']['training']['early_stop'] == 1:
             r = model.fit(train_X, train_y, epochs=self.gs_data['model']['training']['n_epochs'],
                                         verbose=0, shuffle=True, validation_split= self.gs_data['model']['training']['validation_perc'], batch_size=batch_size, callbacks=[earlyStop, TQDMCallback(leave_inner=False, leave_outer=True)])
         else:
             r = model.fit(train_X, train_y, epochs=self.gs_data['model']['training']['n_epochs'],
                                         verbose=0, shuffle=True, batch_size=batch_size, callbacks=[TQDMCallback(leave_inner=False, leave_outer=True)])
-        end = time.time()
-        train_time = end-start
+
         es_epochs = len(r.history['loss'])
         train_loss = r.history['loss'][-1]
         validation_loss = r.history['val_loss'][-1]
-        return {'time':train_time, 'epochs':es_epochs,'train_loss':train_loss, 'validation_loss':validation_loss}
+        return {'epochs':es_epochs,'train_loss':train_loss, 'validation_loss':validation_loss}
 
 
     def create_model(self,n_in=168, n_out=168,num_hidden=50, num_layers=1,dropout=0,batch_size=32, activation='tanh'):

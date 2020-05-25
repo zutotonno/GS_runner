@@ -71,8 +71,11 @@ class gs_runner:
                 model = self.create_model(**key_v)
                 models_list.append(model)
                 param_count = self.param_count(model)
-                r = self.train_model(model, train_X,train_y, key_v['batch_size'],model_id)
-                train_time += r['time']
+                start = time.time()
+                r = self.train_model(model, train_X,train_y, key_v['batch_size'])
+                end = time.time()
+                r_train_time = end-start
+                train_time += r_train_time
                 epochs.append(r['epochs'])
 
 
@@ -166,7 +169,7 @@ class gs_runner:
         pass
 
 
-    def train_model(self, model,train_X : np.array, train_y : np.array,  batch_size: int, current_execution:str):
+    def train_model(self, model,train_X : np.array, train_y : np.array,  batch_size: int):
         """[summary]
 
         Arguments:
@@ -178,7 +181,7 @@ class gs_runner:
             current_execution {str} -- [id for the current training]
 
         Returns:
-            ('time': double, 'epochs': int, 'train_loss':double)
+            ('epochs': int, 'train_loss':double)
         """
         pass
 
