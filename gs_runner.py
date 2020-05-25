@@ -21,18 +21,18 @@ class gs_runner:
         self.inital_seed = None
 
 
-        self.nameInput = self.gs_data['data']['nameInput']
-        self.nameFT = self.gs_data['data']['nameFT']
+        self.target_name = self.gs_data['data']['target_name']
+        self.input_names = self.gs_data['data']['input_names']
         self.n_exp = self.gs_data['model']["training"]['n_exp']
 
 
         database_connection = self.create_connection()
         self.df_TRAIN = pd.read_sql_table(self.gs_data['data']['table_train'],
-                           con=database_connection, columns=['timestamp']+self.nameInput+[self.nameFT])
+                           con=database_connection, columns=['timestamp']+self.input_names+[self.target_name])
         self.df_TRAIN.set_index('timestamp',inplace=True)
 
         self.df_TEST = pd.read_sql_table(self.gs_data['data']['table_test'],
-                           con=database_connection, columns=['timestamp']+self.nameInput+[self.nameFT])
+                           con=database_connection, columns=['timestamp']+self.input_names+[self.target_name])
         self.df_TEST.set_index('timestamp',inplace=True)
 
 
@@ -53,6 +53,9 @@ class gs_runner:
             test_MaxErr = []
             test_MAPE = []
             epochs = []
+            models_list = []
+            preds_list = []
+            exp_ids = []
             train_time = 0
             train_X,train_y,init_seed = self.create_train_data(key_v['n_in'], key_v['n_out'])
             print('Dataset Train shape X, Y: ',train_X.shape, train_y.shape)
@@ -63,8 +66,10 @@ class gs_runner:
                 print(params_selected)
 
                 model_id = str(exp_id)+"_"+str(i)
+                exp_ids.append(model_id)
                 # Train phase
                 model = self.create_model(**key_v)
+                models_list.append(model)
                 param_count = self.param_count(model)
                 r = self.train_model(model, train_X,train_y, key_v['batch_size'],model_id)
                 train_time += r['time']
@@ -79,15 +84,13 @@ class gs_runner:
                 n_preds = int(test_y.shape[0] / key_v['n_out'])
                 n_remaining = int(test_y.shape[0] % key_v['n_out'])
                 inv_yhat = self.forecast(model, initial_seed, n_steps=n_preds, n_remaining=n_remaining)
+                preds_list.append(inv_yhat)
 
 
                 test_MAE.append(mean_absolute_error(test_y, inv_yhat))
                 test_MAPE.append(mean_absolute_percentage_error(test_y+1, inv_yhat+1))
                 test_MaxErr.append(max_error(test_y, inv_yhat))
                 print(test_MAE, test_MAPE, test_MaxErr)
-                col_name = str(i)+'predicted'
-                predictions = pd.DataFrame(pd.Series(data=inv_yhat.reshape(-1), index=self.df_TEST.index),
-                                            columns=[col_name]).to_csv(path_or_buf=self.gs_data['data']['exp_folder']+'/'+model_id+".csv")
 
             train_time = train_time/n_exp
             ep_metrics = {'avg_train_time':train_time,'min_epochs':np.min(epochs), 'avg_epochs':np.mean(epochs), 'max_epochs':np.max(epochs)}
@@ -95,8 +98,13 @@ class gs_runner:
             max_metrics = {'min_MAX':np.min(test_MaxErr), 'avg_MAX':np.mean(test_MaxErr), 'max_MAX':np.max(test_MaxErr)}
             mape_metrics = {'min_MAPE':np.min(test_MAPE), 'avg_MAPE':np.mean(test_MAPE), 'max_MAPE':np.max(test_MAPE)}
 
+
+            data_metrics = self.gs_data['data']
+
+            data_metrics['input_names'] = ''.join(data_metrics['input_names'])
+
             _model_args = [{'exp_id': exp_id},
-            {'model':self.gs_data['model']['name']}, key_v, {'param_count': param_count},self.gs_data['model']['training'], ep_metrics, mae_metrics, max_metrics, mape_metrics, self.gs_data['data']]
+            {'model':self.gs_data['model']['name']}, key_v, {'param_count': param_count},self.gs_data['model']['training'], ep_metrics, mae_metrics, max_metrics, mape_metrics, data_metrics]
 
             _columns = [[el for el in it.keys()] for it in _model_args]
             columns = [item for sublist in _columns for item in sublist]
@@ -105,6 +113,14 @@ class gs_runner:
 
             df_to_db = pd.DataFrame(np.array(data).reshape(1,-1), columns=columns)
             df_to_db.to_sql(con=self.create_connection(), name=self.gs_data['data']['table_result'], if_exists='append', index=None)
+            for i in range(len(exp_ids)):
+                model_id = exp_ids[i]
+                inv_yhat = preds_list[i]
+                col_name = str(i)+'predicted'
+                predictions = pd.DataFrame(pd.Series(data=inv_yhat.reshape(-1), index=self.df_TEST.index),
+                                            columns=[col_name]).to_csv(path_or_buf=self.gs_data['data']['exp_folder']+'/'+model_id+".csv")
+                self.save_model(models_list[i],name=model_id)
+
             current_execution += 1
             pbar.update(1)
 
@@ -188,6 +204,10 @@ class gs_runner:
             model trainable params
         """
         return 0
+
+    def save_model(self, model, name):
+
+        pass
 
 
 

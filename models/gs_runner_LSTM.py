@@ -95,8 +95,8 @@ class gs_runner_LSTM(gs_runner):
 
 
 
-        sc_tr = self.scaler.fit(self.df_TRAIN[[self.nameFT]].values.reshape(-1,1))
-        values_train = sc_tr.transform(self.df_TRAIN[[self.nameFT]].values.astype(dtype=float) )
+        sc_tr = self.scaler.fit(self.df_TRAIN[[self.target_name]].values.reshape(-1,1))
+        values_train = sc_tr.transform(self.df_TRAIN[[self.target_name]].values.astype(dtype=float) )
 
 
 
@@ -117,14 +117,13 @@ class gs_runner_LSTM(gs_runner):
         # split into train and validation sets
         values = reframed_dataset.values
         train = values
-        n_features = 1
         n_obs = n_in*n_features # univariate
 
         train_X, train_y = train[:, :n_obs], train[:, -n_out:]
         # reshape input to be 3D [samples, timesteps, features]
         train_X = train_X.reshape(train_X.shape[0], n_in, n_features)
         print('Dataset Train shape X, Y: ',train_X.shape, train_y.shape)
-        initial_seed = self.df_TRAIN[[self.nameFT]].iloc[-n_in:]
+        initial_seed = self.df_TRAIN[[self.target_name]].iloc[-n_in:]
         return train_X, train_y, initial_seed
 
 
@@ -142,8 +141,6 @@ class gs_runner_LSTM(gs_runner):
         es_epochs = len(r.history['loss'])
         train_loss = r.history['loss'][-1]
         validation_loss = r.history['val_loss'][-1]
-
-        model.save(self.gs_data['data']['exp_folder']+'/'+current_execution+".h5")
         return {'time':train_time, 'epochs':es_epochs,'train_loss':train_loss, 'validation_loss':validation_loss}
 
 
@@ -182,6 +179,10 @@ class gs_runner_LSTM(gs_runner):
             model trainable params
         """
         return model.count_params()
+
+    def save_model(self, model, name):
+        model.save(self.gs_data['data']['exp_folder']+'/'+name+".h5")
+
 
 
 
