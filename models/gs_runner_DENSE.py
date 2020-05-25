@@ -15,7 +15,7 @@ from tensorflow.keras.layers import Dropout
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from gs_runner_LSTM import gs_runner_LSTM
+from models.gs_runner_LSTM import gs_runner_LSTM
 
 
 # convert series to supervised learning
@@ -141,17 +141,6 @@ class gs_runner_DENSE(gs_runner_LSTM):
         model.compile(loss='mse', optimizer='adam', metrics=['mae'])
         print(model.summary())
         return model
-
-    def param_count(self, model) -> int:
-        """[summary]
-
-        Arguments:
-            model {[type]} -- [model created]
-
-        Returns:
-            model trainable params
-        """
-        return model.count_params()
 
 
 

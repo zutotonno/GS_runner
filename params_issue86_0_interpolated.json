@@ -3,6 +3,7 @@
         "table_train": "issue86_interpolated_train",
         "table_test": "issue86_test",
         "nameFT" : "cpu_usagemhz_average",
+        "nameInput" : [],
         "exp_folder": "/home/aritacco/LSTM/issue_86/LSTM_GS_result_OUT/",
         "table_result": "issue86_LSTM_results",
         "info": " "
@@ -10,7 +11,7 @@
     "model":{
         "name":"lstm",
         "training":{
-            "n_epochs": 100,
+            "n_epochs": 500,
             "validation_perc" : 0.15,
             "early_stop" : 1,
             "patience" : 10,
