@@ -269,5 +269,8 @@ if __name__ == "__main__":
 To have a nice visualization of the grid search results, you can go to : http://10.30.4.106:4080/apps/data_visualizer
 and load a .json grid search file (used for past and current experiments) and see the corresponding sql experiment table
 as well as the prediction results in a plot vs the test target.
+
+
+
 ![Alt Text](visualizer.gif)
 
