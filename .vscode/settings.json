@@ -1,0 +1,98 @@
+{
+    // General
+    "files.trimTrailingWhitespace": true,
+    // Editor
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        120
+    ],
+    "[markdown]": {
+        "editor.tabSize": 2,
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python",
+        "editor.rulers": [
+            79
+        ],
+    },
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format",
+    },
+    // Git
+    "git.autofetch": true,
+    // LaTeX Workshop
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-outdir=%OUTDIR%",
+                "%DOC%"
+            ],
+            "env": {}
+        },
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ],
+            "env": {}
+        },
+        {
+            "name": "bibtex",
+            "command": "bibtex",
+            "args": [
+                "%DOCFILE%"
+            ],
+            "env": {}
+        },
+        {
+            "name": "lualatex",
+            "command": "lualatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        },
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex -> bibtex -> pdflatex*2",
+            "tools": [
+                "pdflatex",
+                "bibtex",
+                "pdflatex",
+                "pdflatex"
+            ]
+        },
+        {
+            "name": "pdflatex*2",
+            "tools": [
+                "pdflatex",
+                "pdflatex"
+            ]
+        },
+    ],
+    // Python
+    "python.jediEnabled": false, // disable jedi in favor of Microsoft Python Language Server
+    "python.terminal.activateEnvironment": false,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Args": [
+        "--ignore",
+        "E402"
+    ],
+    // Shell Scripts
+    "shellformat.flag": "-ln bash -s -bn -sr -ci",
+}
