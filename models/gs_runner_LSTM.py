@@ -5,6 +5,7 @@ import itertools
 from keras_tqdm import TQDMCallback
 from tqdm import tqdm
 import time
+import tensorflow
 from tensorflow.keras.callbacks import EarlyStopping
 
 from tensorflow.keras.models import Sequential
@@ -50,6 +51,11 @@ class gs_runner_LSTM(gs_runner):
     def __init__(self,json_path):
         super().__init__(json_path)
         self.scaler = StandardScaler()
+        config = tensorflow.ConfigProto()
+        config.gpu_options.allow_growth = True
+        self.sess = tensorflow.Session(config=config)
+
+
 
 
     def forecast(self, model, init_seed: np.array, n_steps: int , n_remaining: int) -> np.array:
@@ -181,6 +187,9 @@ class gs_runner_LSTM(gs_runner):
 
     def save_model(self, model, name):
         model.save(self.gs_data['data']['exp_folder']+'/'+name+".h5")
+
+    def close(self):
+        self.sess.close()
 
 
 

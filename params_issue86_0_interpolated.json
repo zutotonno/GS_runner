@@ -21,7 +21,7 @@
             "n_in": [24, 168],
             "n_out": [24, 168],
             "num_hidden": [35, 100, 400],
-            "num_layers": [1],
+            "num_layers": [2],
             "dropout": [0],
             "batch_size": [512, 16],
             "activation": ["tanh"]

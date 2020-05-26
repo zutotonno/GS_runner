@@ -10,5 +10,4 @@ if __name__ == "__main__":
     json_path = sys.argv[1]
     runner = gs_runner_LSTM(json_path = json_path)
     runner.run()
-
-    print('ciao')
+    runner.close()
