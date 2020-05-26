@@ -123,10 +123,9 @@ class gs_runner:
                 predictions = pd.DataFrame(pd.Series(data=inv_yhat.reshape(-1), index=self.df_TEST.index),
                                             columns=[col_name]).to_csv(path_or_buf=self.gs_data['data']['exp_folder']+'/'+model_id+".csv")
                 self.save_model(models_list[i],name=model_id)
-                self.close()
-
             current_execution += 1
             pbar.update(1)
+        self.close()
 
 
 
