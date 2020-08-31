@@ -30,3 +30,21 @@ class GSModel():
         '''
         prediction = None
         return prediction
+
+    def num_params(self):
+        '''
+        Return the number of paramters of the model.
+        '''
+        return
+
+    def save(self, model_path):
+        '''
+        Save the model in the given path.
+        '''
+        return
+
+    def load(self, model_path):
+        '''
+        Initialize the model by loading a model from a path.
+        '''
+        return
