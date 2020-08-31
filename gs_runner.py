@@ -14,7 +14,7 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
 class gs_runner:
 
-    def __init__(self, json_path):
+    def __init__(self, json_path, n_exp=10):
         with open(json_path) as f:
             self.gs_data = json.load(f)
 
@@ -45,6 +45,11 @@ class gs_runner:
         pbar = tqdm(total=len(gs_over))
         current_execution = 1
         for params_selected in gs_over:
+            # model = GSmodel(json_path, gs_data.model_hparams)
+            # model.train(self.df_train, gs_data.train_hparams)
+            # output = model.forecast(num_timestamp)
+            # error = Error_metric(output, self.df_test)
+            # self.write_db(error, model_hparams, train_hparams)
             exp_id = int(round(time.time() * 1000))
             key_v = dict(
                 zip(self.gs_data['model']['params'].keys(), params_selected))
