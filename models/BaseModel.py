@@ -2,11 +2,7 @@ import numpy as np
 
 
 class GSModel():
-    def __init__(self, json_path):
-        self.json_path = json_path
-        self.model = None
-
-    def initialize(self, init_seed, **kwargs):
+    def __init__(self, json_path, init_seed, **kwargs):
         '''
         Takes in input a list of hyper-parameter and intialize the model
         by populating the attribute "self.model".
@@ -14,7 +10,8 @@ class GSModel():
         N.B Hyper-Paramters related to the training (length_sequence,
         batch_size, lerning_rate, momentum, etc.) has not to be passed here.
         '''
-        return None
+        self.json_path = json_path
+        self.model = None
 
     def train(self, training_dataset, train_seed, **kwargs):
         '''
