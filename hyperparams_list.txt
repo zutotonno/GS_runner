@@ -1,0 +1,19 @@
+Common hyper-parameters to compare
+Columns of comparing-table:
+
+* Model Hyper Parameters
+    - Number of Trainable Parameters
+* Training Hyper Parameters
+    - Batch Size
+    - [OPTIONAL] Epoch (infinite)
+    - [OPTIONAL] Patient of EarlyStopping
+    - [OPTIONAL] Validation Split Percentage
+* Data Hyper Parameters
+    - Frequence (Hourly, Daily)
+    - Target Variable (A)
+    - Input Variables (A,B,C) *must contain target
+* Error Metrics
+    - MAPE on test
+    - RMSE on test
+    - RMSE on validation
+    - training_time
