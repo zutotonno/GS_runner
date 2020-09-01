@@ -2,6 +2,7 @@ Common hyper-parameters to compare
 Columns of comparing-table:
 
 * Model Hyper Parameters
+    - Name
     - Number of Trainable Parameters
 * Training Hyper Parameters
     - Batch Size
