@@ -13,6 +13,61 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
 
 class gs_runner:
+    def __init__(self, json_path):
+        with open(json_path) as json_buffer:
+            json_data = json.load(json_buffer)
+        # Runner informations
+        self.settings = json_data['settings']
+        self.data_info = json_data['data']
+        self.connection_info = json_data['connection']
+        # Grid Search
+        self.model_grid = json_data['model']
+        self.training_grid = json_data['training']
+        # Database connection
+        self.db_connection = self.__create_connection__()
+        # Dataset attributes
+        self.target_variable = None
+        self.df_train = None
+        self.df_test = None
+        self.__load_data__()
+
+    def __create_connection__(self):
+        db_connection = sqlalchemy.\
+            create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.
+                          format(self.connection_info['database_username'],
+                                 self.connection_info["database_password"],
+                                 self.connection_info["database_ip"],
+                                 self.connection_info["database_name"]))
+        return db_connection
+
+    def __load_data__(self):
+        columns = self.data_info['columns']
+        timestamp_variable = self.data_info['timestamp']
+        self.target_variable = self.data_info['target']
+        self.df_train = pd.read_sql_table(self.data_info['train_table'],
+                                          con=self.db_connection,
+                                          columns=columns).\
+            set_index(timestamp_variable)
+        self.df_test = pd.read_sql_table(self.data_info['test_table'],
+                                         con=self.db_connection,
+                                         columns=columns).\
+            set_index(timestamp_variable)
+
+    def __iter_train__(self):
+        '''
+        Take a dictionary of lists of training information
+        and return dictionries of training informations in form of generator
+        '''
+        num_keys = self.training_grid.keys()
+        values = self.training_grid.values()
+        aux_dict = dict()
+        pass
+
+    def __iter_model__(self):
+        pass
+
+
+class gs_runner_old:
 
     def __init__(self, json_path, n_exp=10):
         with open(json_path) as f:
