@@ -1,0 +1,59 @@
+{
+    "data": {
+        "train_table": [
+            "train_daily_MIDSR02_SDAU"
+        ],
+        "test_table": "test_daily_MIDSR02_SDAU",
+        "columns": [
+            "timestamp",
+            "cpu|usagemhz_average",
+            "SPS-DIAM-MSG.0.Max_TPS",
+            "SPS-DIAM-INT.0-S6a/S6d.Res_Sent"
+        ],
+        "target_variable": "cpu|usagemhz_average",
+        "timestamp_variable": "timestamp"
+    },
+    "model": {
+        "name": "DTEModel",
+        "trend": [
+            "None",
+            "Logistic"
+        ],
+        "scaler": [
+            "StandardScaler",
+            "MinMaxScaler"
+        ],
+        "hidden_size": [
+            50,
+            100
+        ],
+        "auxiliar_variables": {
+            "1": [],
+            "2": [
+                "SPS-DIAM-MSG.0.Max_TPS",
+                "SPS-DIAM-INT.0-S6a/S6d.Res_Sent"
+            ]
+        },
+        "training": {
+            "epochs": 500,
+            "validation_perc": 0.10,
+            "patience": 12,
+            "batch_size": [
+                4,
+                8,
+                16
+            ]
+        },
+        "settings": {
+            "n_exp": 100,
+            "exp_folder": "/home/aritacco/LSTM/GS_results_AUTOREG/Dense_GS_result/",
+            "table_result": "Calldrop_results_onestep",
+            "info": "This run test the Detrend Time Embeddigng sequence to sequence model."
+        },
+        "connection": {
+            "database_username": "voda",
+            "database_password": "issue86",
+            "database_ip": "10.30.4.106",
+            "database_name": "vodafone"
+        }
+    }
