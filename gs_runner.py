@@ -55,16 +55,23 @@ class gs_runner:
 
     def __iter_train__(self):
         '''
-        Take a dictionary of lists of training information
-        and return dictionries of training informations in form of generator
+        Take a dictionary of lists of training hyper parameters
+        and return dictionries of training hyper parameters
         '''
-        num_keys = self.training_grid.keys()
+        keys = self.training_grid.keys()
         values = self.training_grid.values()
-        aux_dict = dict()
-        pass
+        for upla in itertools.product(values):
+            yield dict(zip(keys, upla))
 
     def __iter_model__(self):
-        pass
+        '''
+        Take a dictionary of lists of model hyper parameters
+        and return a list dictionaries of model hyper parameters
+        '''
+        keys = self.model_grid.keys()
+        values = self.model_grid.values()
+        for upla in itertools.product(values):
+            yield dict(zip(keys, upla))
 
 
 class gs_runner_old:
