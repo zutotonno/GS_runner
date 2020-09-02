@@ -95,4 +95,5 @@
     ],
     // Shell Scripts
     "shellformat.flag": "-ln bash -s -bn -sr -ci",
+    "python.languageServer": "Microsoft",
 }
