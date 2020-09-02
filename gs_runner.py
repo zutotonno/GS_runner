@@ -6,6 +6,7 @@ from tqdm import tqdm
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, max_error, mean_squared_error
 import time
+import models
 
 
 def mean_absolute_percentage_error(y_true, y_pred):
@@ -24,14 +25,14 @@ class gs_runner:
         self.model_grid = json_data['model']
         self.training_grid = json_data['training']
         # Database connection
-        self.db_connection = self.__create_connection__()
+        self.db_connection = None
         # Dataset attributes
         self.target_variable = None
         self.df_train = None
         self.df_test = None
-        self.__load_data__()
+        self.load_data()
 
-    def __create_connection__(self):
+    def create_connection(self):
         db_connection = sqlalchemy.\
             create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.
                           format(self.connection_info['database_username'],
@@ -40,7 +41,7 @@ class gs_runner:
                                  self.connection_info["database_name"]))
         return db_connection
 
-    def __load_data__(self):
+    def load_data(self):
         columns = self.data_info['columns']
         timestamp_variable = self.data_info['timestamp']
         self.target_variable = self.data_info['target']
@@ -50,10 +51,10 @@ class gs_runner:
             set_index(timestamp_variable)
         self.df_test = pd.read_sql_table(self.data_info['test_table'],
                                          con=self.db_connection,
-                                         columns=columns).\
+                                         columns=[timestamp_variable, self.target_variable]).\
             set_index(timestamp_variable)
 
-    def __iter_train__(self):
+    def iter_train(self):
         '''
         Take a dictionary of lists of training hyper parameters
         and return dictionries of training hyper parameters
@@ -63,7 +64,7 @@ class gs_runner:
         for upla in itertools.product(values):
             yield dict(zip(keys, upla))
 
-    def __iter_model__(self):
+    def iter_model(self):
         '''
         Take a dictionary of lists of model hyper parameters
         and return a list dictionaries of model hyper parameters
@@ -72,6 +73,30 @@ class gs_runner:
         values = self.model_grid.values()
         for upla in itertools.product(values):
             yield dict(zip(keys, upla))
+
+    def run(self):
+        # Creating db connection
+        self.db_connection = self.create_connection()
+        # Loading data from database
+        self.load_data()
+        periods = len(self.df_test.index)
+        # Start grid search
+        for training_params in self.iter_train():
+            for model_params in self.iter_model():
+                mape = 0
+                rmse = 0
+                for _ in self.settings['n_exp']:
+                    model = getattr(models, model_params['name'])(model_params)
+                    model.train(training_params)
+
+                    result = model.predict(periods)
+                    mape += mean_absolute_percentage_error(
+                        result, self.df_test)
+                    rmse += mean_squared_error(result,
+                                               self.df_test, squared=False)
+                mape = mape / self.settings['n_exp']
+                rmse = rmse / self.settings['n_exp']
+        return
 
 
 class gs_runner_old:
