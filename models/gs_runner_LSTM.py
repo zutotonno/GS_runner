@@ -5,6 +5,7 @@ import itertools
 from keras_tqdm import TQDMCallback
 from tqdm import tqdm
 import time
+import math
 import tensorflow
 from tensorflow.keras.callbacks import EarlyStopping
 
@@ -14,8 +15,7 @@ from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dropout
 
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-
+from sklearn.preprocessing import MinMaxScaler
 from gs_runner import gs_runner
 
 
@@ -50,7 +50,6 @@ class gs_runner_LSTM(gs_runner):
 
     def __init__(self,json_path):
         super().__init__(json_path)
-        self.scaler = StandardScaler()
         config = tensorflow.ConfigProto()
         config.gpu_options.allow_growth = True
         self.sess = tensorflow.Session(config=config)
@@ -104,7 +103,9 @@ class gs_runner_LSTM(gs_runner):
         sc_tr = self.scaler.fit(self.df_TRAIN[[self.target_name]].values.reshape(-1,1))
         values_train = sc_tr.transform(self.df_TRAIN[[self.target_name]].values.astype(dtype=float) )
 
+        timestep_ft = MinMaxScaler(feature_range=(-1,1)).fit_transform(self.df_TRAIN.index.hour.values.reshape(-1,1))
 
+        #values_train = np.concatenate(([values_train, timestep_ft]), axis=1)
 
         groups = list(range(0,values_train.shape[1]))
         n_features = len(groups)

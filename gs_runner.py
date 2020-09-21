@@ -5,6 +5,7 @@ import itertools
 from tqdm import tqdm
 import pandas as pd
 from sklearn.metrics import mean_absolute_error,max_error, mean_squared_error
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import time
 
 def mean_absolute_percentage_error(y_true, y_pred):
@@ -15,8 +16,10 @@ class gs_runner:
     def __init__(self, json_path):
         with open(json_path) as f:
             self.gs_data = json.load(f)
-
-        self.scaler = None
+        if self.gs_data['model']['training']['scaler_mode'] == "standard":
+            self.scaler = StandardScaler()
+        else:
+            self.scaler = MinMaxScaler()
         self.df_TEST = None
         self.inital_seed = None
 
@@ -24,7 +27,6 @@ class gs_runner:
         self.target_name = self.gs_data['data']['target_name']
         self.input_names = self.gs_data['data']['input_names']
         self.n_exp = self.gs_data['model']["training"]['n_exp']
-
 
         database_connection = self.create_connection()
         self.df_TRAIN = pd.read_sql_table(self.gs_data['data']['table_train'],
@@ -52,6 +54,7 @@ class gs_runner:
             test_MAE = []
             test_MaxErr = []
             test_MAPE = []
+            test_RMSE = []
             epochs = []
             models_list = []
             preds_list = []
@@ -93,21 +96,22 @@ class gs_runner:
                 test_MAE.append(mean_absolute_error(test_y, inv_yhat))
                 test_MAPE.append(mean_absolute_percentage_error(test_y+1, inv_yhat+1))
                 test_MaxErr.append(max_error(test_y, inv_yhat))
-                print(test_MAE, test_MAPE, test_MaxErr)
+                test_RMSE.append(mean_squared_error(test_y, inv_yhat, squared=False))
+                print(test_MAE, test_MAPE, test_MaxErr, test_RMSE)
 
             train_time = train_time/n_exp
             ep_metrics = {'avg_train_time':train_time,'min_epochs':np.min(epochs), 'avg_epochs':np.mean(epochs), 'max_epochs':np.max(epochs)}
             mae_metrics = {'min_MAE':np.min(test_MAE), 'avg_MAE':np.mean(test_MAE), 'max_MAE':np.max(test_MAE)}
             max_metrics = {'min_MAX':np.min(test_MaxErr), 'avg_MAX':np.mean(test_MaxErr), 'max_MAX':np.max(test_MaxErr)}
             mape_metrics = {'min_MAPE':np.min(test_MAPE), 'avg_MAPE':np.mean(test_MAPE), 'max_MAPE':np.max(test_MAPE)}
-
+            rmse_metrics = {'min_MAPE':np.min(test_RMSE), 'avg_MAPE':np.mean(test_RMSE), 'max_MAPE':np.max(test_RMSE)}
 
             data_metrics = self.gs_data['data']
 
             data_metrics['input_names'] = ''.join(data_metrics['input_names'])
 
             _model_args = [{'exp_id': exp_id},
-            {'model':self.gs_data['model']['name']}, key_v, {'param_count': param_count},self.gs_data['model']['training'], ep_metrics, mae_metrics, max_metrics, mape_metrics, data_metrics]
+            {'model':self.gs_data['model']['name']}, key_v, {'param_count': param_count},self.gs_data['model']['training'], ep_metrics, mae_metrics, max_metrics, mape_metrics,rmse_metrics, data_metrics]
 
             _columns = [[el for el in it.keys()] for it in _model_args]
             columns = [item for sublist in _columns for item in sublist]

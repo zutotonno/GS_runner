@@ -1,0 +1,38 @@
+{
+    "data":{
+        "table_train": "CSCF_NAICP42_train",
+        "table_test": "CSCF_NAICP42_test",
+        "target_name" : "cpu_usage_average",
+        "input_names" : [],
+        "exp_folder": "/home/aritacco/LSTM/paper_uc3-5_2019/CSCF_NAICP42/",
+        "table_result": "CSCF_NAICP42_results",
+        "info": "produzione"
+    },
+    "model":{
+        "name":"lstm",
+        "training":{
+            "device": "gpu",
+            "scaler_mode": "standard",
+            "n_epochs": 1000,
+            "validation_perc" : 0.10,
+            "early_stop" : 1,
+            "patience" : 10,
+            "n_exp": 10
+        },
+        "params":{
+            "n_in": [720, 168, 24],
+            "n_out": [720],
+            "num_hidden": [150, 125, 100, 75, 50, 25],
+            "num_layers": [1],
+            "dropout": [0],
+            "batch_size": [32],
+            "activation": ["tanh"]
+        }
+    },
+    "connection":{
+        "database_username" : "voda",
+        "database_password" : "issue86",
+        "database_ip": "10.30.4.23",
+        "database_name": "vodafone"
+    }
+  }
