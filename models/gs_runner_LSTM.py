@@ -187,7 +187,8 @@ class gs_runner_LSTM(gs_runner):
         return model.count_params()
 
     def save_model(self, model, name):
-        model.save(self.gs_data['data']['exp_folder']+'/'+name+".h5")
+        print("")
+        #model.save(self.gs_data['data']['exp_folder']+'/'+name+".h5")
 
     def close(self):
         self.sess.close()
